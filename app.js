@@ -1,81 +1,159 @@
-// O código abaixo, até a linha 8 é uma forma de escrever funções, porém desta forma
-//  Vc teria que escrever, no mínimo duas linhas para cada Título, Paragrafo, Campo e outras.
+//O principal objetivo deste desafio é fortalecer suas habilidades em lógica de programação. Aqui você deverá desenvolver a lógica para resolver o problema.
+let amigos = [];
+let sorteioRealizado = false;
+let toRemove = '';
+let sorteado = '';
 
-// let titulo = document.querySelector('h1');
-// titulo.innerHTML = 'Jogo do número secreto';
-
-// let paragrafo = document.querySelector('p');
-// paragrafo.innerHTML = 'Escolha um número entre 1 e 10';
-
-let listaDeNumerosSorteados = [];
-let numeroLimite = 10;
-let numeroSecreto = gerarNumeroAleatorio();
-let tentativas = 1;
-
-function exibirTextoNaTela(tag, texto) {
-    let campo = document.querySelector(tag);
-    campo.innerHTML = texto;
-    responsiveVoice.speak(texto, 'Brazilian Portuguese Female', {rate:1.2});
-    //Esta é uma alternativa para retirar as legendas que aparecem na tela enquanto os textos são falado. PS. para mim não funcionou.
-    //responsiveVoice.speak(texto, 'Brazilian Portuguese Female', {rate:1.2, showModal: false}); 
-
+// Coloca a primeira letra de cada palavra em maiúscula
+function capitalizar(texto) {
+    return texto.split(' ')
+        .map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase())
+        .join(' ');
 }
 
-function exibirMensagemInicial() {
-  exibirTextoNaTela('h1', 'Jogo do número secreto');
-  exibirTextoNaTela('p', 'Escolha um número entre 1 e 10');
+// Verifica se o campo está vazio
+function validaCampoVazio(texto) {
+    return texto === '';
 }
 
-exibirMensagemInicial();
+// Adicionar evento de keydown para adicionar amigo ao pressionar Enter
+document.getElementById("amigo").addEventListener("keydown", function (event) 
+{
+  
+  if (event.key === "Enter") {
+    adicionarAmigo();
+  }
+});
 
-function verificarChute() {
-    let chute = document.querySelector('input').value;
+listaDeAmigos.push(nomeAmigo);
+  atualizarListaDeAmigos();
+  inputAmigo.value = "";
+  
+// Verifica se o amigo já foi adicionado
+function validaDuplicado(amigo) {
+    return amigos.includes(amigo);
+}
 
-    if (chute == numeroSecreto) {
-        exibirTextoNaTela('h1', 'Acertou!');
-        let palavraTentativa = tentativas > 1 ? 'tentativas' : 'tentativa';
-        let mensagemTentativas = `Você descobriu o número secreto com ${tentativas} ${palavraTentativa}!`;
-        exibirTextoNaTela('p', mensagemTentativas);
-        document.getElementById('reiniciar').removeAttribute('disabled');
-    } else {
-        if (chute > numeroSecreto) {
-            exibirTextoNaTela('p', 'O número secreto é menor');
-        } else {
-            exibirTextoNaTela('p', 'O número secreto é maior');
+function validaTrataInput(amigoInput) {
+
+    // remove espaços do começo e final do texto
+    const amigo = capitalizar(amigoInput.trim());
+
+    // verifica se o campo está vazio
+    if (validaCampoVazio(amigo)) {
+        alert('Digite o nome do Amigo!');
+        return;
+    }
+
+    // valida se o nome possui apenas letras
+    if (!/^[a-zA-Z\s]+$/.test(amigo)) {
+        alert(`O nome ${amigo} é inválido! O nome deve conter apenas letras!`);
+        return;
+    }
+
+    // verifica se o amigo já foi adicionado
+    if (validaDuplicado(amigo)) {
+        alert(`O nome do Amigo ${amigo} já foi adicionado, coloque outro!`);
+        return;
+    }
+    amigos.push(amigo);
+}
+
+
+// Adiciona um amigo à lista
+function adicionarAmigo() {
+    const amigoInput = document.getElementById('amigo').value;
+
+    //adiciona amigos separados por vírgula
+    if (amigoInput.includes(',')) {
+        //split a string em um array
+        let amigosInput = amigoInput.split(',');
+        for (let item of amigosInput) {
+           validaTrataInput(item);
         }
-        tentativas++;
-        limparCampo();
-    }
-    // Corpo da função.
-    console.log(chute == numeroSecreto);
-  }
-
-  function gerarNumeroAleatorio() {
-    let numeroEscolhido = parseInt(Math.random() * numeroLimite + 1);
-    let quantidadeDeElementosNaLista = listaDeNumerosSorteados.length;
-
-    if (quantidadeDeElementosNaLista == numeroLimite) {
-        listaDeNumerosSorteados = [];
+    }else{
+        validaTrataInput(amigoInput);
     }
 
-    if (listaDeNumerosSorteados.includes(numeroEscolhido)) {
-        return gerarNumeroAleatorio();
-    }  else {
-          listaDeNumerosSorteados.push(numeroEscolhido);
-          console.log(listaDeNumerosSorteados);
-          return numeroEscolhido;
-    }
+    document.getElementById('resultado').innerHTML = '';
+    atualizarListaAmigos();
+    limparElemento("amigo");
 }
 
-  function limparCampo() {
-      chute = document.querySelector('input')
-      chute.value = '';
-  }
+// Sorteia um amigo da lista
+function sortearAmigo() {
+    if (sorteioRealizado) {
+        alert('Todos os nomes já foram sorteados, adicione novos amigos para sortear novamente!');
+        ocultarResultado();
+        return;
+    } 
+    if (amigos.length === 0) {
+        alert('Adicione amigos para sortear!');
+        return;
+    } 
+    
+    if(toRemove){
+        amigos = amigos.filter(amigo => amigo !== toRemove);
+        toRemove = '';
+    }
+    
+    sorteado = amigos[Math.floor(Math.random() * amigos.length)];
+    limparElemento('amigo');
+    limparElemento('listaAmigos');
+    if (amigos.length == 1) {
+        alterarValorElemento('resultado', sorteado);
+        document.getElementById("hiden-elements").classList.remove("hidden");
+        document.getElementById("auto-sorteio").classList.add("hidden");
+        sorteioRealizado = true;
+    }else{
+        alterarValorElemento('resultado', sorteado);
+        document.getElementById("hiden-elements").classList.remove("hidden");
+        document.getElementById("auto-sorteio").classList.remove("hidden");
+        console.log("removeu");
+        toRemove = sorteado;
+    }
+    let mensagem = "O Amigo Secreto Sorteado é: " + sorteado;
+    alterarValorElemento('resultado', mensagem);
+}
 
-  function reiniciarJogo() {
-    numeroSecreto = gerarNumeroAleatorio();
-    limparCampo();
-    tentativas = 1;
-    exibirMensagemInicial();
-    document.getElementById('reiniciar').setAttribute('disabled', true);
-  }
+// Atualiza a lista de amigos no HTML
+function atualizarListaAmigos() {
+    alterarValorElemento('listaAmigos', amigos.map(amigo => `<li>${amigo}</li>`).join(''));
+}
+
+// Limpa a lista de amigos no HTML
+function reiniciarAmigoSecreto() {
+    limparElemento('amigo');
+    limparElemento('resultado');
+    limparElemento('listaAmigos');
+    document.getElementById("hiden-elements").classList.add("hidden");
+    amigos = [];
+    sorteioRealizado = false;
+    sorteado = '';
+    toRemove = '';
+}
+
+
+function ocultarResultado(){
+    if (!sorteioRealizado) {
+        alterarValorElemento('resultado', 'Continue sorteando!');
+        document.getElementById("auto-sorteio").classList.remove("hidden");
+        document.getElementById("hiden-elements").classList.add("hidden");
+    }
+    else{
+        alterarValorElemento('resultado', '');
+        reiniciarAmigoSecreto();
+    }
+    document.getElementById("auto-sorteio").classList.remove("hidden");
+    document.getElementById("hiden-elements").classList.add("hidden");
+}
+
+// Limpa o valor de um elemento
+function limparElemento(elemento) {
+    alterarValorElemento(elemento, '');
+    document.getElementById(elemento).value = '';
+}
+
+function alterarValorElemento(elemento, valor) {
+    document.getElementById(elemento).innerHTML = valor;
+}
