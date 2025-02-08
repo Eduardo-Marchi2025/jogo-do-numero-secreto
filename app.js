@@ -1,140 +1,66 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    color: white;
+let listaDeNumerosSorteados = [];
+let numeroLimite = 10;
+let numeroSecreto = gerarNumeroAleatorio();
+let tentativas = 1;
+
+function exibirTextoNaTela(tag, texto) {
+    let campo = document.querySelector(tag);
+    campo.innerHTML = texto;
+    responsiveVoice.speak(texto, 'Brazilian Portuguese Female', {rate:1.2});
 }
 
-body {
-    background: linear-gradient(#1354A5 0%, #041832 33.33%, #041832 66.67%, #01080E 100%);
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+function exibirMensagemInicial() {
+    exibirTextoNaTela('h1', 'Jogo do número secreto');
+    exibirTextoNaTela('p', 'Escolha um número entre 1 e 10');
 }
 
+exibirMensagemInicial();
 
-body::before {
-    background-image: url("img/code.png");
-    background-repeat: no-repeat;
-    background-position: right;
-    content: "";
-    display: block;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 0.4;
-}
-
-.container {
-    width: 80%;
-    height: 80%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 24px;
-    border: 1px solid #1875E8;
-    box-shadow: 4px 4px 20px 0px rgba(1, 8, 14, 0.15);
-    background-image: url("img/Ruido.png");
-    background-size: 100% 100%;
-    position: relative;
-}
-
-
-.container__conteudo {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    bottom: 0;
-}
-
-.container__informacoes {
-    flex: 1;
-    padding: 3rem;
-}
-
-.container__botao {
-    border-radius: 16px;
-    background: #1875E8;
-    padding: 16px 24px;
-    width: 100%;
-    font-size: 24px;
-    font-weight: 700;
-    border: none;
-    margin-top: 2rem;
-}
-
-.container__texto {
-    margin: 16px 0 16px 0;
-}
-
-.container__texto-azul {
-    color: #1875E8;
-}
-
-.container__input {
-    width: 100%;
-    height: 72px;
-    border-radius: 16px;
-    background-color: #FFF;
-    border: none;
-    color: #1875E8;
-    padding: 2rem;
-    font-size: 24px;
-    font-weight: 700;
-    font-family: 'Inter', sans-serif;
-}
-
-.container__botoes {
-    display: flex;
-    gap: 2em;
-}
-
-h1 {
-    font-family: 'Chakra Petch', sans-serif;
-    font-size: 72px;
-    padding-bottom: 3rem;
-}
-
-p,
-button {
-    font-family: 'Inter', sans-serif;
-}
-
-.texto__paragrafo {
-    font-size: 32px;
-    font-weight: 400;
-}
-
-button:disabled {
-    background-color: gray;
-}
-
-@media screen and (max-width: 1250px) {
-
-    h1 {
-        font-size: 50px;
+function verificarChute() {
+    let chute = document.querySelector('input').value;
+    
+    if (chute == numeroSecreto) {
+        exibirTextoNaTela('h1', 'Acertou!');
+        let palavraTentativa = tentativas > 1 ? 'tentativas' : 'tentativa';
+        let mensagemTentativas = `Você descobriu o número secreto com ${tentativas} ${palavraTentativa}!`;
+        exibirTextoNaTela('p', mensagemTentativas);
+        document.getElementById('reiniciar').removeAttribute('disabled');
+    } else {
+        if (chute > numeroSecreto) {
+            exibirTextoNaTela('p', 'O número secreto é menor');
+        } else {
+            exibirTextoNaTela('p', 'O número secreto é maior');
+        }
+        tentativas++;
+        limparCampo();
     }
+}
 
-    .container__botao {
-        font-size: 16px;
+function gerarNumeroAleatorio() {
+    let numeroEscolhido = parseInt(Math.random() * numeroLimite + 1);
+    let quantidadeDeElementosNaLista = listaDeNumerosSorteados.length;
+
+    if (quantidadeDeElementosNaLista == numeroLimite) {
+        listaDeNumerosSorteados = [];
     }
-
-
-    .texto__paragrafo {
-        font-size: 24px;
+    if (listaDeNumerosSorteados.includes(numeroEscolhido)) {
+        return gerarNumeroAleatorio();
+    } else {
+        listaDeNumerosSorteados.push(numeroEscolhido);
+        console.log(listaDeNumerosSorteados)
+        return numeroEscolhido;
     }
+}
 
-    .container__imagem-pessoa {
-        display: none;
-    }
+function limparCampo() {
+    chute = document.querySelector('input');
+    chute.value = '';
+}
 
-    .container__conteudo {
-        display: block;
-        position: inherit;
-    }
-
-    .container__informacoes {
-        padding: 1rem
-    }
+function reiniciarJogo() {
+    numeroSecreto = gerarNumeroAleatorio();
+    limparCampo();
+    tentativas = 1;
+    exibirMensagemInicial();
+    document.getElementById('reiniciar').setAttribute('disabled', true)
 }
