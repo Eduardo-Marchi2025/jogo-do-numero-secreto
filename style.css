@@ -76,9 +76,9 @@ body {
 
 /* Títulos */
 .main-title {
-    font-size: 64px;
+    font-size: 56px;
     font-family: "Merriweather", serif;
-    font-weight: 900;
+    font-weight: 600;
     font-style: italic;
     color: var(--color-white);
     text-align: center;
@@ -86,8 +86,8 @@ body {
 
 .section-title {
     font-family: "Inter", serif;
-    font-size: 44px;
-    font-weight: 700;
+    font-size: 36px;
+    font-weight: 500;
     color: var(--color-roxo);
     margin: 10px 0;
     text-align: center;
@@ -95,8 +95,8 @@ body {
 
 .section-p {
     font-family: "Inter", serif;
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 500;
     color: var(--color-roxo);
     margin: 10px 0;
     text-align: center;
@@ -106,8 +106,8 @@ body {
 .input-wrapper {
     display: flex;
     justify-content: center;
-    width: 200%;
-    max-width: 680px;
+    width: 155%;
+    max-width: 530px;
     margin-top: 20px;
 }
 
@@ -309,7 +309,7 @@ ul {
 
 .rodape {
     position: fixed;
-    padding: 24px;
+    padding: 15px;
     color: var(--color-white);
     background: var(--color-orange-pastel2);
     text-align: center;
